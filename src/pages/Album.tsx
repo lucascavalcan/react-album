@@ -2,8 +2,8 @@ import {useParams, useNavigate} from "react-router-dom";
 import {useState, useEffect} from "react";
 import { api } from "../api";
 import { Album } from "../types/Albuns";
-import {Photo} from "../types/Photos";
-import { PhotoItem } from "../components/PhotoItem";
+import {Photo} from "../types/Photos"; 
+import { PhotoItem } from "../components/PhotoItem/PhotoItem";
 
 
 export const PageAlbum = () => {
@@ -20,21 +20,21 @@ export const PageAlbum = () => {
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
-        if (params.id) {
-            loadAlbumItem(params.id);
-            loadPhotoItem(params.id)
+        if (params.slug) {
+            loadAlbumItem(params.slug);
+            loadPhotoItem(params.slug)
         }
     }, []);
   
 
-    async function loadAlbumItem(id:string) {
-        let AlbumJson = await api.getAlbumItem(id)
+    async function loadAlbumItem(slug:string) {
+        let AlbumJson = await api.getAlbum(slug)
         setAlbumItem(AlbumJson);
     };
 
-    async function loadPhotoItem(id:string) {
+    async function loadPhotoItem(slug:string) {
         setLoading(true)
-        let PhotoJson = await api.getPhotoItem(id)
+        let PhotoJson = await api.getPhotosFromAlbum(slug)
         setLoading(false);
         setPhotoItem(PhotoJson);        
     }
@@ -49,7 +49,14 @@ export const PageAlbum = () => {
              <div>Carregando...</div>
             }
 
-            <h1>{albumItem.title}</h1>                  
+            <h1>{albumItem.title}</h1>    
+
+            <div>
+                {photoItem.map((item, index)=>(
+                    <PhotoItem key={index} data={item}/>
+                ))}
+            </div>
+
 
         </div>
 

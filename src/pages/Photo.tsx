@@ -1,10 +1,7 @@
 import {useParams, useNavigate} from "react-router-dom";
-
 import {useState, useEffect} from "react";
 import { api } from "../api";
 import { Photo } from "../types/Photos";
-import { AlbumItem } from "../components/AlbumItem";
-import { PhotoItem } from "../components/PhotoItem";
 
 export const PagePhoto = () => {
     
@@ -15,41 +12,40 @@ export const PagePhoto = () => {
         navigate(-1);
     }
 
-    const [photos, setPhotos] = useState<Photo[]>([])
+    const [photoItem, setPhotoItem] = useState<Photo>()
     const [loading, setLoading] = useState(false)
 
-    useEffect (() => {
-        loadPhotos()
-      },[]);
+    useEffect(() => {
+        if (params.slug) {
+            loadPhotoItem(params.slug)
+        }
+    }, []);
 
-     async function loadPhotos() {
+     async function loadPhotoItem(slug: string) {
        setLoading(true)
-       let json = await api.getPhotos();
+       let json = await api.getPhotoItem(slug);
        setLoading(false);
-       setPhotos(json);
+       setPhotoItem(json);
     }
 
 return (
     <div>
         <button onClick={handleBackButton}>Voltar</button>
-        <div>Foto{params.slug}</div>
+        <br/>
 
         {loading &&
           <div>Carregando...</div>
         }
 
-
-        {!loading && photos.length > 0 &&
+        {photoItem &&
             <>
-                
+                <h4>{photoItem.title}</h4>
+                <img src={photoItem.url} alt={photoItem.title} />              
             </>
+      
         }
 
-        {!loading && photos.length === 0 &&
-            <>
-                
-            </>
-        } 
+
 
     </div>
     )
